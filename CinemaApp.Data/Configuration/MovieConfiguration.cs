@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace CinemaApp.Data.Configuration
 {
+    using static EntityConstants.Movie;
     public class MovieConfiguration : IEntityTypeConfiguration<Movie>
     {
         public void Configure(EntityTypeBuilder<Movie> model)
@@ -18,27 +19,37 @@ namespace CinemaApp.Data.Configuration
 
             model.Property(m =>  m.Title)
                 .IsRequired()
-                .HasMaxLength(EntityConstants.Movie.TitleMaxLength);
+                .HasMaxLength(TitleMaxLength);
 
             model.Property(m => m.Genre)
                 .IsRequired()
-                .HasMaxLength(EntityConstants.Movie.GenreMaxLength);
+                .HasMaxLength(GenreMaxLength);
+
+            model.Property(m => m.ReleaseDate)
+                .IsRequired();
 
             model.Property(m => m.Director)
                 .IsRequired()
-                .HasMaxLength(EntityConstants.Movie.DirectorMaxLength);
+                .HasMaxLength(DirectorMaxLength);
 
             model.Property(m => m.Duration)
                 .IsRequired()
-                .HasMaxLength(EntityConstants.Movie.DurationMax);
+                .HasMaxLength(DurationMax);
 
             model.Property(m => m.Description)
                 .IsRequired()
-                .HasMaxLength(EntityConstants.Movie.DescriptionMaxLength);
+                .HasMaxLength(DescriptionMaxLength);
+
+            
+            model.Property(m => m.ImageUrl)
+                .IsRequired(false)
+                .HasMaxLength(ImageUrlMaxLength);
 
             model.Property(m => m.IsDeleted)
                 .IsRequired()
                 .HasDefaultValue(false);
+
+            //model.HasQueryFilter(m => m.IsDeleted == false);
 
             model.HasData(this.SeedMovies());
         }
@@ -52,7 +63,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("ae50a5ab-9642-466f-b528-3cc61071bb4c"),
                     Title = "Harry Potter and the Goblet of Fire",
                     Genre = "Fantasy",
-                    ReleaseDate = new DateTime(2005, 11, 01),
+                    ReleaseDate = new DateOnly(2005, 11, 01),
                     Director = "Mike Newel",
                     Duration = 157,
                     Description = "Harry Potter and the Goblet of Fire is a 2005 fantasy film directed by Mike Newell from a screenplay by Steve Kloves. It is based on the 2000 novel Harry Potter and the Goblet of Fire by J. K. Rowling.",
@@ -63,7 +74,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("777634e2-3bb6-4748-8e91-7a10b70c78ac"),
                     Title = "Lord of the Rings",
                     Genre = "Fantasy",
-                    ReleaseDate = new DateTime(2001, 05, 01),
+                    ReleaseDate = new DateOnly(2001, 05, 01),
                     Director = "Peter Jackson",
                     Duration = 178,
                     Description = "The Lord of the Rings: The Fellowship of the Ring is a 2001 epic high fantasy adventure film directed by Peter Jackson from a screenplay by Fran Walsh, Philippa Boyens, and Jackson, based on 1954's The Fellowship of the Ring, the first volume of the novel The Lord of the Rings by J. R. R. Tolkien.",
@@ -74,7 +85,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("68fb84b9-ef2a-402f-b4fc-595006f5c275"),
                     Title = "Inception",
                     Genre = "Sci-Fi",
-                    ReleaseDate = new DateTime(2010, 07, 16),
+                    ReleaseDate = new DateOnly(2010, 07, 16),
                     Director = "Christopher Nolan",
                     Duration = 148,
                     Description = "A thief who enters the dreams of others to steal secrets is given the inverse task: planting an idea into someone's mind.",
@@ -85,7 +96,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("02b52bb0-1c2b-49a4-ba66-6d33f81d38d1"),
                     Title = "The Dark Knight",
                     Genre = "Action",
-                    ReleaseDate = new DateTime(2008, 07, 18),
+                    ReleaseDate = new DateOnly(2008, 07, 18),
                     Director = "Christopher Nolan",
                     Duration = 152,
                     Description = "Batman faces the Joker, who seeks to create chaos in Gotham through psychological warfare.",
@@ -96,7 +107,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("16376cc6-b3e0-4bf7-a0e4-9cbd1490522c"),
                     Title = "Interstellar",
                     Genre = "Sci-Fi",
-                    ReleaseDate = new DateTime(2014, 11, 07),
+                    ReleaseDate = new DateOnly(2014, 11, 07),
                     Director = "Christopher Nolan",
                     Duration = 169,
                     Description = "A group of explorers travel through a wormhole in space in search of a new habitable planet.",
@@ -107,7 +118,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("811a1a9e-61a8-4f6f-acb0-55a252c2b713"),
                     Title = "Avatar",
                     Genre = "Sci-Fi",
-                    ReleaseDate = new DateTime(2009, 12, 18),
+                    ReleaseDate = new DateOnly(2009, 12, 18),
                     Director = "James Cameron",
                     Duration = 162,
                     Description = "A paraplegic Marine is sent to the moon Pandora on a mission but becomes torn between following orders and protecting an alien civilization.",
@@ -118,7 +129,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("ab2c3213-48a7-41ea-9393-45c60ef813e6"),
                     Title = "Titanic",
                     Genre = "Romance",
-                    ReleaseDate = new DateTime(1997, 12, 19),
+                    ReleaseDate = new DateOnly(1997, 12, 19),
                     Director = "James Cameron",
                     Duration = 195,
                     Description = "A love story unfolds on the doomed voyage of the Titanic.",
@@ -129,7 +140,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("844d9abd-104d-41ab-b14a-ce059779ad91"),
                     Title = "The Matrix",
                     Genre = "Sci-Fi",
-                    ReleaseDate = new DateTime(1999, 03, 31),
+                    ReleaseDate = new DateOnly(1999, 03, 31),
                     Director = "Lana Wachowski, Lilly Wachowski",
                     Duration = 136,
                     Description = "A computer hacker learns about the true nature of his reality and his role in the war against its controllers.",
@@ -140,7 +151,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("54082f99-023b-4d68-89ac-44c00a0958d0"),
                     Title = "Forrest Gump",
                     Genre = "Drama",
-                    ReleaseDate = new DateTime(1994, 07, 06),
+                    ReleaseDate = new DateOnly(1994, 07, 06),
                     Director = "Robert Zemeckis",
                     Duration = 142,
                     Description = "The story of a man with a kind heart and an incredible life journey.",
@@ -151,7 +162,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("bf9ff8b3-3209-4b18-9f4b-5172c45b73f9"),
                     Title = "Gladiator",
                     Genre = "Action",
-                    ReleaseDate = new DateTime(2000, 05, 05),
+                    ReleaseDate = new DateOnly(2000, 05, 05),
                     Director = "Ridley Scott",
                     Duration = 155,
                     Description = "A betrayed Roman general seeks revenge against the corrupt emperor who murdered his family and sent him into slavery.",
@@ -162,7 +173,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("e00208b1-cb12-4bd4-8ac1-36ab62f7b4c9"),
                     Title = "The Shawshank Redemption",
                     Genre = "Drama",
-                    ReleaseDate = new DateTime(1994, 09, 23),
+                    ReleaseDate = new DateOnly(1994, 09, 23),
                     Director = "Frank Darabont",
                     Duration = 142,
                     Description = "Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.",
@@ -173,7 +184,7 @@ namespace CinemaApp.Data.Configuration
                     Id = Guid.Parse("4491b6f5-2a11-4c4c-8c6b-c371f47d2152"),
                     Title = "Pulp Fiction",
                     Genre = "Crime",
-                    ReleaseDate = new DateTime(1994, 10, 14),
+                    ReleaseDate = new DateOnly(1994, 10, 14),
                     Director = "Quentin Tarantino",
                     Duration = 154,
                     Description = "The lives of two hitmen, a boxer, and a gangster intertwine in four tales of violence and redemption.",

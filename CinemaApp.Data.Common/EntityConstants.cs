@@ -35,7 +35,12 @@ namespace CinemaApp.Data.Common
             /// </summary>
             public const int DurationMin = 1;
             public const int DurationMax = 300;
-        
+
+            /// <summary>
+            /// Movie ImageUrl should be able to store text with length up to 2048 (refer URI RFC)
+            /// </summary>
+            public const int ImageUrlMaxLength = 2048;
+
         }
 
     }

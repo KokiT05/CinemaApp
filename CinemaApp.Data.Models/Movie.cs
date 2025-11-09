@@ -20,7 +20,8 @@ namespace CinemaApp.Data.Models
         public string Genre { get; set; } = null!;
 
         [Comment("Movie Release Date")]
-        public DateTime ReleaseDate { get; set; }
+        // public DateOnly ReleaseDate { get; set; }
+        public DateOnly ReleaseDate { get; set; }
 
         [Comment("Movie Director")]
         public string Director { get; set; } = null!;
