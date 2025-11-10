@@ -4,6 +4,8 @@ using CinemaApp.Data;
 namespace CinemaApp.Web
 {
     using CinemaApp.Data;
+    using CinemaApp.Services.Core;
+    using CinemaApp.Services.Core.Interfaces;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     public class Program
@@ -33,6 +35,9 @@ namespace CinemaApp.Web
                 options.Password.RequiredUniqueChars = 0;
             })
             .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddScoped<IMovieService, MovieService>();
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
