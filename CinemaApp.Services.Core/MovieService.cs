@@ -58,5 +58,30 @@ namespace CinemaApp.Services.Core
             await this._dbContext.Movies.AddAsync(movie);
             await this._dbContext.SaveChangesAsync();
         }
+
+		public async Task<MovieDetailsViewModel> GetByIdAsync(string id)
+		{
+			Movie? movie = await this._dbContext.Movies.AsNoTracking()
+                                                .FirstOrDefaultAsync(m => m.Id.ToString() == id);
+
+            if (movie == null)
+            {
+                return null;
+            }
+
+            MovieDetailsViewModel movieDetailsViewModel = new MovieDetailsViewModel()
+            {
+                Id = movie.Id.ToString(),
+                Title = movie.Title,
+                Genre = movie.Genre,
+                ReleaseDate = movie.ReleaseDate.ToString("dd-MM-yyyy"),
+                Director = movie.Director,
+                Description = movie.Description,
+                Duration = movie.Duration,
+                ImageUrl = movie.ImageUrl,
+            };
+
+            return movieDetailsViewModel;
+        }
     }
 }

@@ -24,8 +24,7 @@ namespace CinemaApp.Web.ViewModels.Movie
         public string ReleaseDate { get; set; } = null!;
 
         [Required(ErrorMessage = DurationRequiredMessage)]
-        [MinLength(DurationMin, ErrorMessage = DurationRangeMessage)]
-        [MaxLength(DurationMax, ErrorMessage = DurationRangeMessage)]
+        [Range(DurationMin, DurationMax, ErrorMessage = DurationRangeMessage)]
         public int Duration { get; set; }
 
         [Required(ErrorMessage = DirectorRequiredMessage)]

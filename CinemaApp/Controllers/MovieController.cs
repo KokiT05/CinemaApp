@@ -28,5 +28,30 @@ namespace CinemaApp.Web.Controllers
         {
             return this.View();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(MovieFormViewModel movieFormViewModel)
+        {
+            if(this.ModelState.IsValid == false)
+            {
+                return this.View(movieFormViewModel);
+            }
+
+            await this.movieService.AddAsync(movieFormViewModel);
+            return this.RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(string id)
+        {
+            MovieDetailsViewModel movieDetailsViewModel = await this.movieService.GetByIdAsync(id);
+
+            if (movieDetailsViewModel == null)
+            {
+                return NotFound();
+            }
+
+            return this.View(movieDetailsViewModel);
+        }
     }
 }

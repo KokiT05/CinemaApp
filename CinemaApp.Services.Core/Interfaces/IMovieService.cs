@@ -12,5 +12,7 @@ namespace CinemaApp.Services.Core.Interfaces
         Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync();
 
         Task AddAsync(MovieFormViewModel movieFormViewModel);
+
+        Task<MovieDetailsViewModel> GetByIdAsync(string id);
     }
 }
