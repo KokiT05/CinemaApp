@@ -32,7 +32,7 @@ namespace CinemaApp.Services.Core
                                                 Id = m.Id.ToString(),
                                                 Title = m.Title,
                                                 Genre = m.Genre,
-                                                ReleaseDate = m.ReleaseDate.ToString("yyyy-MM-dd"),
+                                                ReleaseDate = m.ReleaseDate.ToString(ReleaseDateFormat),
                                                 Director = m.Director,
                                                 ImageUrl = m.ImageUrl,
 
@@ -74,7 +74,7 @@ namespace CinemaApp.Services.Core
                 Id = movie.Id.ToString(),
                 Title = movie.Title,
                 Genre = movie.Genre,
-                ReleaseDate = movie.ReleaseDate.ToString("dd-MM-yyyy"),
+                ReleaseDate = movie.ReleaseDate.ToString("yyyy-MM-dd"),
                 Director = movie.Director,
                 Description = movie.Description,
                 Duration = movie.Duration,
@@ -82,6 +82,72 @@ namespace CinemaApp.Services.Core
             };
 
             return movieDetailsViewModel;
+        }
+
+        public async Task<MovieFormViewModel?> GetForEditByIdAsync(string id)
+        {
+            MovieFormViewModel? movieFormViewModel = await this._dbContext.Movies
+                                                    .Where(m => m.Id.ToString() == id)
+                                                    .Select(m => new MovieFormViewModel()
+                                                    {
+                                                        Id = m.Id.ToString(),
+                                                        Title = m.Title,
+                                                        Genre = m.Genre,
+                                                        Director = m.Director,
+                                                        Description = m.Description,
+                                                        Duration = m.Duration,
+                                                        ReleaseDate = m.ReleaseDate
+                                                                    .ToString(ReleaseDateFormat),
+                                                        ImageUrl = m.ImageUrl,
+                                                    }).FirstOrDefaultAsync();
+
+            return movieFormViewModel;
+        }
+
+        // the method can return bool
+        public async Task EditAsync(string id, MovieFormViewModel movieFormViewModel)
+        {
+            Movie? movie = await this._dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+
+            if (movie == null)
+            {
+                return;
+            }
+
+            movie.Title = movieFormViewModel.Title;
+            movie.Genre = movieFormViewModel.Genre;
+            movie.Director = movieFormViewModel.Director;
+            movie.Description = movieFormViewModel.Description;
+            movie.Duration = movieFormViewModel.Duration;
+            movie.ReleaseDate = DateOnly.ParseExact(movieFormViewModel.ReleaseDate, ReleaseDateFormat,
+                                            CultureInfo.InvariantCulture);
+            movie.ImageUrl = movieFormViewModel.ImageUrl;
+
+            await this._dbContext.SaveChangesAsync();
+        }
+
+        // The method can return bool
+        public async Task SoftDeleteAsync(string id)
+        {
+            Movie? movie = await this._dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+
+            if (movie != null && movie.IsDeleted == false)
+            {
+                movie.IsDeleted = true;
+                await this._dbContext.SaveChangesAsync();
+            }
+        }
+
+        // The method can return bool
+        public async Task HardDeleteAsync(string id)
+        {
+            Movie? movie = await this._dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+
+            if (movie != null)
+            {
+                this._dbContext.Movies.Remove(movie);
+                await this._dbContext.SaveChangesAsync();
+            }
         }
     }
 }

@@ -10,6 +10,8 @@ namespace CinemaApp.Web.ViewModels.Movie
     using static Data.Common.EntityConstants.Movie;
     public class MovieFormViewModel
     {
+        public string Id { get; set; } = null!;
+
         [Required(ErrorMessage = TitleRequiredMessage)]
         [MinLength(TitleMinLength, ErrorMessage = TitleMinLengthMessage)]
         [MaxLength(TitleMaxLength, ErrorMessage = TitleMaxLengthMessage)]

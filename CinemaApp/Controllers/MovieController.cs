@@ -48,10 +48,57 @@ namespace CinemaApp.Web.Controllers
 
             if (movieDetailsViewModel == null)
             {
+                
                 return NotFound();
             }
 
             return this.View(movieDetailsViewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(string id)
+        {
+            MovieFormViewModel? movieFormViewModel = await this.movieService.GetForEditByIdAsync(id);
+
+            if (movieFormViewModel == null)
+            {
+                return NotFound();
+            }
+
+            return this.View(movieFormViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(string id, MovieFormViewModel movieFormViewModel)
+        {
+            if (this.ModelState.IsValid == false)
+            {
+                return this.View(movieFormViewModel);
+            }
+
+            await this.movieService.EditAsync(id, movieFormViewModel);
+
+            return this.RedirectToAction(nameof(Details), new { id });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Delete(string id)
+        {
+            MovieDetailsViewModel movieDetailsViewModel = await this.movieService.GetByIdAsync(id);
+
+            if (movieDetailsViewModel == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.View(movieDetailsViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteComfirmed(string id)
+        {
+            await this.movieService.SoftDeleteAsync(id);
+            return this.RedirectToAction(nameof(Index));
         }
     }
 }
