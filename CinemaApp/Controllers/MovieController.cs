@@ -15,11 +15,18 @@ namespace CinemaApp.Web.Controllers
             this.movieService = movieService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             IEnumerable<AllMoviesIndexViewModel> movies = await this.movieService.GetAllMoviesAsync();
 
-            return View(movies);
+            return this.View(movies);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Create()
+        {
+            return this.View();
         }
     }
 }

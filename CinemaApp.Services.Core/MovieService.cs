@@ -1,15 +1,18 @@
 ﻿using CinemaApp.Data;
+using CinemaApp.Data.Models;
 using CinemaApp.Services.Core.Interfaces;
 using CinemaApp.Web.ViewModels.Movie;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace CinemaApp.Services.Core
 {
+    using static Data.Common.EntityConstants.Movie;
     public class MovieService : IMovieService
     {
         private readonly ApplicationDbContext _dbContext;
@@ -36,6 +39,24 @@ namespace CinemaApp.Services.Core
                                             }).ToListAsync();
 
             return movies;
+        }
+
+        public async Task AddAsync(MovieFormViewModel movieFormViewModel)
+        {
+            Movie movie = new Movie()
+            {
+                Title = movieFormViewModel.Title,
+                Genre = movieFormViewModel.Genre,
+                Director = movieFormViewModel.Director,
+                Description = movieFormViewModel.Description,
+                Duration = movieFormViewModel.Duration,
+                ReleaseDate = DateOnly.ParseExact(movieFormViewModel.ReleaseDate, ReleaseDateFormat,
+                                                    CultureInfo.InvariantCulture),
+                ImageUrl = movieFormViewModel.ImageUrl,
+            };
+
+            await this._dbContext.Movies.AddAsync(movie);
+            await this._dbContext.SaveChangesAsync();
         }
     }
 }
