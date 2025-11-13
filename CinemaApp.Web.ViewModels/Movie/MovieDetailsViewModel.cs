@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CinemaApp.Web.ViewModels.Movie
-{// original
+{
     public class MovieDetailsViewModel
     {
         public string Id { get; set; } = null!;
@@ -22,6 +22,6 @@ namespace CinemaApp.Web.ViewModels.Movie
 
         public string Description { get; set; } = null!;
 
-        public string? ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = null!;
     }
 }

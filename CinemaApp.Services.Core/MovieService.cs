@@ -13,18 +13,19 @@ using System.Threading.Tasks;
 namespace CinemaApp.Services.Core
 {
     using static Data.Common.EntityConstants.Movie;
+    using static GCommon.ApplicationConstants;
     public class MovieService : IMovieService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly ApplicationDbContext dbContext;
 
         public MovieService(ApplicationDbContext dbContext)
         {
-            this._dbContext = dbContext;
+            this.dbContext = dbContext;
         }
 
         public async Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync()
         {
-            List<AllMoviesIndexViewModel> movies = await this._dbContext.Movies
+            List<AllMoviesIndexViewModel> movies = await this.dbContext.Movies
                                             .Where(m => m.IsDeleted == false)
                                             .AsNoTracking()
                                             .Select(m => new AllMoviesIndexViewModel()
@@ -32,121 +33,140 @@ namespace CinemaApp.Services.Core
                                                 Id = m.Id.ToString(),
                                                 Title = m.Title,
                                                 Genre = m.Genre,
-                                                ReleaseDate = m.ReleaseDate.ToString(ReleaseDateFormat),
+                                                ReleaseDate = m.ReleaseDate.ToString(ApplicationDateFormat),
                                                 Director = m.Director,
                                                 ImageUrl = m.ImageUrl,
 
                                             }).ToListAsync();
 
+            foreach (AllMoviesIndexViewModel movie in movies)
+            {
+                if (String.IsNullOrEmpty(movie.ImageUrl))
+                {
+                    movie.ImageUrl = $"~/images/{NoImageUrl}";
+                }
+            }
+
             return movies;
         }
 
-        public async Task AddAsync(MovieFormViewModel movieFormViewModel)
+        public async Task AddMovieAsync(MovieFormInputModel movieInputModel)
         {
             Movie movie = new Movie()
             {
-                Title = movieFormViewModel.Title,
-                Genre = movieFormViewModel.Genre,
-                Director = movieFormViewModel.Director,
-                Description = movieFormViewModel.Description,
-                Duration = movieFormViewModel.Duration,
-                ReleaseDate = DateOnly.ParseExact(movieFormViewModel.ReleaseDate, ReleaseDateFormat,
-                                                    CultureInfo.InvariantCulture),
-                ImageUrl = movieFormViewModel.ImageUrl,
+                Title = movieInputModel.Title,
+                Genre = movieInputModel.Genre,
+                Director = movieInputModel.Director,
+                Description = movieInputModel.Description,
+                Duration = movieInputModel.Duration,
+                ReleaseDate = DateOnly.ParseExact(movieInputModel.ReleaseDate, ApplicationDateFormat,
+                                                    CultureInfo.InvariantCulture, DateTimeStyles.None),
+                ImageUrl = movieInputModel.ImageUrl,
             };
 
-            await this._dbContext.Movies.AddAsync(movie);
-            await this._dbContext.SaveChangesAsync();
+            await this.dbContext.Movies.AddAsync(movie);
+            await this.dbContext.SaveChangesAsync();
         }
 
-		public async Task<MovieDetailsViewModel> GetByIdAsync(string id)
+		public async Task<MovieDetailsViewModel?> GetMovieDetailsByIdAsync(string? id)
 		{
-			Movie? movie = await this._dbContext.Movies.AsNoTracking()
-                                                .FirstOrDefaultAsync(m => m.Id.ToString() == id);
+            MovieDetailsViewModel? movieDetailsViewModel = null;
 
-            if (movie == null)
+            bool isValidGuid = Guid.TryParse(id, out Guid movieId);
+            if (isValidGuid)
             {
-                return null;
+                movieDetailsViewModel = await this.dbContext.Movies
+                                            .AsNoTracking()
+                                            .Where(m => m.Id == movieId) 
+                                            .Select(m => new MovieDetailsViewModel()
+                                            {
+                                                Id = m.Id.ToString(),
+                                                Title = m.Title,
+                                                Genre = m.Genre,
+                                                Director = m.Director,
+                                                Description = m.Description,
+                                                Duration = m.Duration,
+                                                ReleaseDate = m.ReleaseDate.ToString(ApplicationDateFormat),
+                                                ImageUrl = m.ImageUrl ?? $"~/images/{NoImageUrl}",
+                                            }).SingleOrDefaultAsync();
             }
-
-            MovieDetailsViewModel movieDetailsViewModel = new MovieDetailsViewModel()
-            {
-                Id = movie.Id.ToString(),
-                Title = movie.Title,
-                Genre = movie.Genre,
-                ReleaseDate = movie.ReleaseDate.ToString("yyyy-MM-dd"),
-                Director = movie.Director,
-                Description = movie.Description,
-                Duration = movie.Duration,
-                ImageUrl = movie.ImageUrl,
-            };
 
             return movieDetailsViewModel;
         }
 
-        public async Task<MovieFormViewModel?> GetForEditByIdAsync(string id)
+        public async Task<MovieFormInputModel?> GetEditableMovieByIdAsync(string? id)
         {
-            MovieFormViewModel? movieFormViewModel = await this._dbContext.Movies
-                                                    .Where(m => m.Id.ToString() == id)
-                                                    .Select(m => new MovieFormViewModel()
-                                                    {
-                                                        Id = m.Id.ToString(),
-                                                        Title = m.Title,
-                                                        Genre = m.Genre,
-                                                        Director = m.Director,
-                                                        Description = m.Description,
-                                                        Duration = m.Duration,
-                                                        ReleaseDate = m.ReleaseDate
-                                                                    .ToString(ReleaseDateFormat),
-                                                        ImageUrl = m.ImageUrl,
-                                                    }).FirstOrDefaultAsync();
+            MovieFormInputModel? editableMovie = null;
 
-            return movieFormViewModel;
+            bool isValidGuid = Guid.TryParse(id, out Guid movieId);
+            if (isValidGuid)
+            {
+                editableMovie = await this.dbContext.Movies
+                                            .AsNoTracking()
+                                            .Where(m => m.Id == movieId)
+                                            .Select(m => new MovieFormInputModel()
+                                            {
+                                                Title = m.Title,
+                                                Genre = m.Genre,
+                                                Director = m.Director,
+                                                Description = m.Description,
+                                                Duration = m.Duration,
+                                                ReleaseDate = m.ReleaseDate.ToString(ApplicationDateFormat),
+                                                ImageUrl = m.ImageUrl ?? $"~/images/{NoImageUrl}",
+                                            }).SingleOrDefaultAsync();
+            }
+
+            return editableMovie;
         }
 
-        // the method can return bool
-        public async Task EditAsync(string id, MovieFormViewModel movieFormViewModel)
+        public async Task<bool> EditMovieAsync(MovieFormInputModel movieInputModel)
         {
-            Movie? movie = await this._dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+            Movie? movie = await this.dbContext.Movies
+                .SingleOrDefaultAsync(m => m.Id.ToString() == movieInputModel.Id);
 
             if (movie == null)
             {
-                return;
+                return false;
             }
 
-            movie.Title = movieFormViewModel.Title;
-            movie.Genre = movieFormViewModel.Genre;
-            movie.Director = movieFormViewModel.Director;
-            movie.Description = movieFormViewModel.Description;
-            movie.Duration = movieFormViewModel.Duration;
-            movie.ReleaseDate = DateOnly.ParseExact(movieFormViewModel.ReleaseDate, ReleaseDateFormat,
-                                            CultureInfo.InvariantCulture);
-            movie.ImageUrl = movieFormViewModel.ImageUrl;
+            DateOnly movieReleaseDate = DateOnly.ParseExact
+                                    (movieInputModel.ReleaseDate, ApplicationDateFormat,
+                                    CultureInfo.InvariantCulture, DateTimeStyles.None);
 
-            await this._dbContext.SaveChangesAsync();
+            movie.Title = movieInputModel.Title;    
+            movie.Genre = movieInputModel.Genre;
+            movie.Director = movieInputModel.Director;
+            movie.Description = movieInputModel.Description;
+            movie.Duration = movieInputModel.Duration;
+            movie.ReleaseDate = movieReleaseDate;
+            movie.ImageUrl = movieInputModel.ImageUrl ?? $"~/images/{NoImageUrl}";
+
+            await this.dbContext.SaveChangesAsync();
+
+            return true;
         }
 
         // The method can return bool
         public async Task SoftDeleteAsync(string id)
         {
-            Movie? movie = await this._dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+            Movie? movie = await this.dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
 
             if (movie != null && movie.IsDeleted == false)
             {
                 movie.IsDeleted = true;
-                await this._dbContext.SaveChangesAsync();
+                await this.dbContext.SaveChangesAsync();
             }
         }
 
         // The method can return bool
         public async Task HardDeleteAsync(string id)
         {
-            Movie? movie = await this._dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
+            Movie? movie = await this.dbContext.Movies.FirstOrDefaultAsync(m => m.Id.ToString() == id);
 
             if (movie != null)
             {
-                this._dbContext.Movies.Remove(movie);
-                await this._dbContext.SaveChangesAsync();
+                this.dbContext.Movies.Remove(movie);
+                await this.dbContext.SaveChangesAsync();
             }
         }
     }

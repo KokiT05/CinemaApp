@@ -75,7 +75,7 @@ namespace CinemaApp.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Movies", t =>
+                    b.ToTable("Movies", null, t =>
                         {
                             t.HasComment("Movie in the system");
                         });

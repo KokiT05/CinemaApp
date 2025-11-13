@@ -7,10 +7,14 @@ using System.Threading.Tasks;
 
 namespace CinemaApp.Web.ViewModels.Movie
 {
+    using static GCommon.ApplicationConstants;
     using static Data.Common.EntityConstants.Movie;
-    public class MovieFormViewModel
+    using static Web.ViewModels.ValidationMessages.Movie;
+    public class MovieFormInputModel
     {
-        public string Id { get; set; } = null!;
+        // Id does not have validation, since the model is shared between Add and Edit
+        // Id will be validated in the corresponding Service method
+        public string Id { get; set; } = string.Empty;
 
         [Required(ErrorMessage = TitleRequiredMessage)]
         [MinLength(TitleMinLength, ErrorMessage = TitleMinLengthMessage)]
@@ -40,6 +44,6 @@ namespace CinemaApp.Web.ViewModels.Movie
         public string Description { get; set; } = null!;
 
         [MaxLength(ImageUrlMaxLength, ErrorMessage = ImageUrlMaxLengthMessage)]
-        public string? ImageUrl { get; set; }
+        public string? ImageUrl { get; set; } = $"~/images/{NoImageUrl}";
     }
 }

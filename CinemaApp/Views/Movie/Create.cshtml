@@ -1,7 +1,12 @@
-﻿@model CinemaApp.Web.ViewModels.Movie.MovieFormViewModel
+﻿@using static CinemaApp.GCommon.ApplicationConstants
+@model CinemaApp.Web.ViewModels.Movie.MovieFormInputModel
 
 @{
     ViewData["Title"] = "Add New Movie";
+
+    bool releaseDateExist = DateOnly.TryParse(Model?.ReleaseDate, out DateOnly date);
+
+    string releateDateInputValue = releaseDateExist ? date.ToString(ApplicationDateFormat) : string.Empty;
 }
 
 <div class="container mt-5">
@@ -10,7 +15,7 @@
 
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <form asp-action="Create" method="post" class="bg-dark text-light p-4 rounded shadow-lg">
+            <form asp-controller="Movie" asp-action="Create" method="post" class="bg-dark text-light p-4 rounded shadow-lg">
                 <div class="mb-3">
                     <label asp-for="Title" class="form-label fw-bold">Movie Title</label>
                     <input asp-for="Title" class="form-control" placeholder="Enter movie title">
@@ -38,7 +43,7 @@
                 <div class="mb-3">
                     <label asp-for="ReleaseDate" class="form-label fw-bold">Release Date</label>
                     <input asp-for="ReleaseDate" class="form-control" type="date"
-                           value="@(DateTime.TryParse(Model?.ReleaseDate, out var date) ? date.ToString("yyyy-MM-dd") : "")">
+                           value="@releateDateInputValue">
                     <span asp-validation-for="ReleaseDate" class="text-danger"></span>
                 </div>
 

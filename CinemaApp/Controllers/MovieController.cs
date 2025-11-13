@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CinemaApp.Web.Controllers
 {
+    using static CinemaApp.Web.ViewModels.ValidationMessages.Movie;
     public class MovieController : Controller
     {
         private readonly IMovieService movieService;
@@ -30,61 +31,113 @@ namespace CinemaApp.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(MovieFormViewModel movieFormViewModel)
+        public async Task<IActionResult> Create(MovieFormInputModel movieFormInputModel)
         {
             if(this.ModelState.IsValid == false)
             {
-                return this.View(movieFormViewModel);
+                return this.View(movieFormInputModel);
             }
 
-            await this.movieService.AddAsync(movieFormViewModel);
-            return this.RedirectToAction(nameof(Index));
+            try
+            {
+                await this.movieService.AddMovieAsync(movieFormInputModel);
+
+                return this.RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                // TODO: Implement it with the ILogger
+                Console.WriteLine(e.Message);
+
+                this.ModelState.AddModelError(string.Empty, ServiceCreateError);
+                return this.View(movieFormInputModel);
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(string? id)
         {
-            MovieDetailsViewModel movieDetailsViewModel = await this.movieService.GetByIdAsync(id);
-
-            if (movieDetailsViewModel == null)
+            try
             {
-                
-                return NotFound();
-            }
+                MovieDetailsViewModel? movieDetails = await this.movieService.GetMovieDetailsByIdAsync(id);
 
-            return this.View(movieDetailsViewModel);
+                if (movieDetails == null)
+                {
+                    //TODO: Custom 404 page
+                    return this.RedirectToAction(nameof(Index));
+                }
+
+                return this.View(movieDetails);
+            }
+            catch (Exception e)
+            {
+                // TODO: Implement it with the ILogger
+                //TODO: Add JS bars to indicate such errors 
+                Console.WriteLine(e.Message);
+
+                return this.RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(string? id)
         {
-            MovieFormViewModel? movieFormViewModel = await this.movieService.GetForEditByIdAsync(id);
-
-            if (movieFormViewModel == null)
+            try
             {
-                return NotFound();
-            }
+                MovieFormInputModel? editableMovie = await this.movieService.GetEditableMovieByIdAsync(id);
 
-            return this.View(movieFormViewModel);
+                if (editableMovie == null)
+                {
+                    // TODO: Custom 404 page
+                    return this.RedirectToAction(nameof(Index));
+                }
+
+                return this.View(editableMovie);
+            }
+            catch (Exception e)
+            {
+                // TODO: Implement it with the ILogger
+                //TODO: Add JS bars to indicate such errors 
+                Console.WriteLine(e.Message);
+
+                return this.RedirectToAction(nameof(Index)); 
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(string id, MovieFormViewModel movieFormViewModel)
+        public async Task<IActionResult> Edit(MovieFormInputModel movieInputModel)
         {
             if (this.ModelState.IsValid == false)
             {
-                return this.View(movieFormViewModel);
+                return this.View(movieInputModel);
             }
 
-            await this.movieService.EditAsync(id, movieFormViewModel);
+            try
+            {
+                bool editSuccess = await this.movieService.EditMovieAsync(movieInputModel);
 
-            return this.RedirectToAction(nameof(Details), new { id });
+                if (editSuccess == false)
+                {
+                    // TODO: Custom 404 page
+                    return this.RedirectToAction(nameof(Index));
+                }
+
+                return this.RedirectToAction(nameof(Details), new { id = movieInputModel.Id });
+            }
+            catch (Exception e)
+            {
+                // TODO: Implement it with the ILogger
+                //TODO: Add JS bars to indicate such errors 
+                Console.WriteLine(e.Message);
+
+                return this.RedirectToAction(nameof(Index));
+            }
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(string id)
         {
-            MovieDetailsViewModel movieDetailsViewModel = await this.movieService.GetByIdAsync(id);
+            MovieDetailsViewModel movieDetailsViewModel = await this.movieService.GetMovieDetailsByIdAsync(id);
 
             if (movieDetailsViewModel == null)
             {
