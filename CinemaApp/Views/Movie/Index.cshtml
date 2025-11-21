@@ -44,10 +44,13 @@
 
                     @if (User?.Identity?.IsAuthenticated ?? false)
                     {
-                        <button class="btn btn-outline-warning btn-sm rounded-pill px-3 add-to-watchlist-btn"
+                        <a asp-controller="Watchlist"
+                           asp-action="Add" 
+                           asp-route-id="@movie.Id" 
+                           class="btn btn-warning btn-sm rounded-pill px-4 fw-bold"
                                 data-movie-id="@movie.Id">
-                            <i class="fas fa-bookmark"></i> Add to Watchlist
-                        </button>
+                            <i class="bi bi-bookmark-star"></i> Add to Watchlist
+                        </a>
                     }
 
 
