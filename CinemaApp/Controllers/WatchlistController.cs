@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Web.Controllers
 {
-    public class WatchlistController : Controller
+    public class WatchlistController : BaseController
     {
         [HttpGet]
         public async Task<IActionResult> Index()
