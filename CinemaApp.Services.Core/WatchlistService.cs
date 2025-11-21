@@ -88,18 +88,21 @@ namespace CinemaApp.Services.Core
             if (isUserExist && isMovieExist)
             {
 
-                UserMovie userMovie = await this.dbContext.UserMovies.FindAsync(userId, movieId);
+                UserMovie userMovie = await this.dbContext.UserMovies
+                                            .FindAsync([userId, Guid.Parse(movieId)]);
 
                 this.dbContext.UserMovies.Remove(userMovie);
+                await this.dbContext.SaveChangesAsync();
             }
 
-            // or
-            //UserMovie userMovie = await this.dbContext.UserMovies.FindAsync(userId, movieId);
+			// or
+			//UserMovie userMovie = await this.dbContext.UserMovies
+            //                      .FindAsync([userId, Guid.Parse(movieId)]);
 
-            //if (userMovie != null)
-            //{
-            //    this.dbContext.UserMovies.Remove(userMovie);
-            //}
-        }
-    }
+			//if (userMovie != null)
+			//{
+			//    this.dbContext.UserMovies.Remove(userMovie);
+			//}
+		}
+	}
 }
