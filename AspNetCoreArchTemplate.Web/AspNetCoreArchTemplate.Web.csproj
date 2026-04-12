@@ -28,4 +28,9 @@
     <ProjectReference Include="..\AspNetCoreArchTemplate.Web.ViewModels\AspNetCoreArchTemplate.Web.ViewModels.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Identity\Data\" />
+    <Folder Include="wwwroot\images\" />
+  </ItemGroup>
+
 </Project>
