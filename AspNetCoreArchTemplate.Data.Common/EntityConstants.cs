@@ -10,6 +10,8 @@ namespace AspNetCoreArchTemplate.Data.Common
 	{
 		public static class Movie
 		{
+
+
 			/// <summary>
 			/// Movie Title should be able to store text with length up to 100 characters.
 			/// </summary>
@@ -35,11 +37,6 @@ namespace AspNetCoreArchTemplate.Data.Common
 			/// </summary>
 			public const int DurationMin = 1;
 			public const int DurationMax = 300;
-
-			/// <summary> !
-			/// Movie ReleaseDate has default value
-			/// </summary>
-			public static DateTime ReleaseDateDefaultValue = DateTime.Now;
 
 			/// <summary>
 			/// Movie ImageUrl should be able to store text with length up to 2048 characters.
