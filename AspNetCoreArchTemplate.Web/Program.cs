@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using AspNetCoreArchTemplate.Data;
 namespace AspNetCoreArchTemplate.Web
 {
+    using AspNetCoreArchTemplate.Services.Core;
+    using AspNetCoreArchTemplate.Services.Core.Interfaces;
     using Data;
 
     using Microsoft.AspNetCore.Identity;
@@ -40,6 +42,9 @@ namespace AspNetCoreArchTemplate.Web
                     options.Password.RequiredUniqueChars = 0;
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddScoped<IMovieService, MovieService>();
+
             builder.Services.AddControllersWithViews();
 
             WebApplication? app = builder.Build();

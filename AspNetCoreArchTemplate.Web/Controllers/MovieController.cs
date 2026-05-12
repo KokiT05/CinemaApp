@@ -1,4 +1,5 @@
 ﻿using AspNetCoreArchTemplate.Data;
+using AspNetCoreArchTemplate.Services.Core.Interfaces;
 using AspNetCoreArchTemplate.Web.ViewModels.Movie;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,23 +8,15 @@ namespace AspNetCoreArchTemplate.Web.Controllers
 {
 	public class MovieController : Controller
 	{
-		private readonly ApplicationDbContext context;
+		private readonly IMovieService movieService;
 
-		public MovieController(ApplicationDbContext context)
+		public MovieController(IMovieService movieService)
 		{
-			this.context = context;
+			this.movieService = movieService;
 		}
 		public async Task<IActionResult> Index()
 		{
-			List<AllMoviesIndexViewModel> movies = await context.Movies.Select(m => new AllMoviesIndexViewModel
-														{
-															Id = m.Id.ToString(),
-															Title = m.Title,
-															Genre = m.Genre,
-															ReleaseDate = m.ReleaseDate.ToString("yyyy-MM-dd"),
-															Director = m.Director,
-															ImageUrl = m.ImageUrl
-														}).ToListAsync();
+			IEnumerable<AllMoviesIndexViewModel> movies = await this.movieService.GetAllMoviesAsync();
 
 			return View(movies);
 		}
