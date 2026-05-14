@@ -1,15 +1,18 @@
 ﻿using AspNetCoreArchTemplate.Data;
+using AspNetCoreArchTemplate.Data.Models;
 using AspNetCoreArchTemplate.Services.Core.Interfaces;
 using AspNetCoreArchTemplate.Web.ViewModels.Movie;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace AspNetCoreArchTemplate.Services.Core
 {
+    using static AspNetCoreArchTemplate.Data.Common.EntityConstants.Movie;
     public class MovieService : IMovieService
     {
         private readonly ApplicationDbContext applicationDbContext;
@@ -34,6 +37,25 @@ namespace AspNetCoreArchTemplate.Services.Core
                                                                 }).ToListAsync();
 
             return movies;
+        }
+
+        public async Task AddAsync(MovieFormViewModel movieFormViewModel)
+        {
+            Movie movie = new Movie()
+            {
+                Title = movieFormViewModel.Title,
+                Genre = movieFormViewModel.Genre,
+                Director = movieFormViewModel.Director,
+                ReleaseDate = DateOnly.ParseExact(movieFormViewModel.ReleaseDate,
+                                                    ReleaseDateFormat,
+                                                    CultureInfo.InvariantCulture),
+                Duration = movieFormViewModel.Duration,
+                Description = movieFormViewModel.Description,
+                ImageUrl = movieFormViewModel.ImageUrl
+            };
+
+            await this.applicationDbContext.AddAsync(movie);
+            await this.applicationDbContext.SaveChangesAsync();
         }
     }
 }

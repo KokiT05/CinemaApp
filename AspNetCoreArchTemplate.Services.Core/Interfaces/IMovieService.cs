@@ -11,6 +11,7 @@ namespace AspNetCoreArchTemplate.Services.Core.Interfaces
     {
         Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync();
 
+        Task AddAsync(MovieFormViewModel movieFormViewModel);
 
     }
 }

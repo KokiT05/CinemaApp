@@ -30,7 +30,7 @@ namespace AspNetCoreArchTemplate.Data.Configuration
 
 			entity.Property(m => m.Director)
 					.IsRequired()
-					.HasMaxLength(DirectorMaxLength);
+					.HasMaxLength(DirectorNameMaxLength);
 
 			entity.Property(m => m.Duration)
 					.IsRequired();

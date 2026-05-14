@@ -20,5 +20,23 @@ namespace AspNetCoreArchTemplate.Web.Controllers
 
 			return View(movies);
 		}
+
+		[HttpGet]
+		public async Task<IActionResult> Create()
+		{
+			return this.View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Create(MovieFormViewModel movieFormViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return this.View(movieFormViewModel);
+			}
+
+			await this.movieService.AddAsync(movieFormViewModel);
+			return this.RedirectToAction(nameof(Index));
+        }
 	}
 }
