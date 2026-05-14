@@ -57,5 +57,32 @@ namespace AspNetCoreArchTemplate.Services.Core
             await this.applicationDbContext.AddAsync(movie);
             await this.applicationDbContext.SaveChangesAsync();
         }
+
+        public async Task<MovieDetailsViewModel?> GetByIdAsync(string id)
+        {
+            Movie? movie = await this.applicationDbContext.Movies
+                                                        .AsNoTracking()
+                                                        .FirstOrDefaultAsync(m => m.Id.ToString() == id &&
+                                                                            m.IsDeleted == false);
+
+            if (movie == null)
+            {
+                return null;
+            }
+
+            MovieDetailsViewModel movieDetails = new MovieDetailsViewModel()
+            {
+                Id = id,
+                Title = movie.Title,
+                Genre = movie.Genre,
+                Director = movie.Director,
+                ReleaseDate = movie.ReleaseDate.ToString(ReleaseDateFormat),
+                Duration = movie.Duration,
+                Description = movie.Description,
+                ImageUrl = movie.ImageUrl
+            };
+
+            return movieDetails;
+        }
     }
 }

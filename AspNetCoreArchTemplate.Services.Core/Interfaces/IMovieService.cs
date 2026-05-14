@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AspNetCoreArchTemplate.Data.Models;
 using AspNetCoreArchTemplate.Web.ViewModels.Movie;
 
 namespace AspNetCoreArchTemplate.Services.Core.Interfaces
@@ -12,6 +13,8 @@ namespace AspNetCoreArchTemplate.Services.Core.Interfaces
         Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync();
 
         Task AddAsync(MovieFormViewModel movieFormViewModel);
+
+        Task<MovieDetailsViewModel?> GetByIdAsync(string id);
 
     }
 }

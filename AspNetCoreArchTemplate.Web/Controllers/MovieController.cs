@@ -38,5 +38,18 @@ namespace AspNetCoreArchTemplate.Web.Controllers
 			await this.movieService.AddAsync(movieFormViewModel);
 			return this.RedirectToAction(nameof(Index));
         }
+
+		[HttpGet]
+		public async Task<IActionResult> Details(string id)
+		{
+			MovieDetailsViewModel? movieDetails = await this.movieService.GetByIdAsync(id);
+
+			if (movieDetails == null)
+			{
+				return this.NotFound();
+			}
+
+			return this.View(movieDetails);
+		}
 	}
 }
