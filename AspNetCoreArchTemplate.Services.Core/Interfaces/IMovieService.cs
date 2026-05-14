@@ -16,5 +16,8 @@ namespace AspNetCoreArchTemplate.Services.Core.Interfaces
 
         Task<MovieDetailsViewModel?> GetByIdAsync(string id);
 
+        Task<MovieFormViewModel?> GetForEditByIdAsync(string id);
+
+        Task EditAsync(string id, MovieFormViewModel movieFormViewModel);
     }
 }

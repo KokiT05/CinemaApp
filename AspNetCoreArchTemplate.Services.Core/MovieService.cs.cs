@@ -84,5 +84,47 @@ namespace AspNetCoreArchTemplate.Services.Core
 
             return movieDetails;
         }
+
+        public async Task<MovieFormViewModel?> GetForEditByIdAsync(string id)
+        {
+            MovieFormViewModel? movieFormViewModel = await this.applicationDbContext.Movies
+                                                        .Where(m => m.Id.ToString() == id && m.IsDeleted == false)
+                                                        .Select(m => new MovieFormViewModel()
+                                                        {
+                                                            Id = id,
+                                                            Title = m.Title,
+                                                            Genre = m.Genre,
+                                                            Director = m.Director,
+                                                            ReleaseDate = m.ReleaseDate.ToString(ReleaseDateFormat),
+                                                            Duration = m.Duration,
+                                                            Description = m.Description,
+                                                            ImageUrl = m.ImageUrl
+
+                                                        }).FirstOrDefaultAsync();
+
+            return movieFormViewModel;
+        }
+
+        public async Task EditAsync(string id, MovieFormViewModel movieFormViewModel)
+        {
+            Movie? movie = await this.applicationDbContext.Movies
+                                                .FirstOrDefaultAsync(m => m.Id.ToString() == id && m.IsDeleted == false);
+
+            if (movie == null)
+            {
+                return;
+            }
+
+            movie.Title = movieFormViewModel.Title;
+            movie.Genre = movieFormViewModel.Genre;
+            movie.Director = movieFormViewModel.Director;
+            movie.ReleaseDate = DateOnly.ParseExact
+                                (movieFormViewModel.ReleaseDate, ReleaseDateFormat, CultureInfo.InvariantCulture);
+            movie.Duration = movieFormViewModel.Duration;
+            movie.Description = movieFormViewModel.Description;
+            movie.ImageUrl = movieFormViewModel.ImageUrl;
+
+            await this.applicationDbContext.SaveChangesAsync();
+        }
     }
 }

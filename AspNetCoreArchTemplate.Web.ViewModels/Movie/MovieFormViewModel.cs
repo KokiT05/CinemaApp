@@ -12,6 +12,8 @@ namespace AspNetCoreArchTemplate.Web.ViewModels.Movie
 
     public class MovieFormViewModel
     {
+        public string Id { get; set; } = null!;
+
         [Required(ErrorMessage = TitleRequiredMessage)]
         [MinLength(TitleMinLength, ErrorMessage = TitleMinLengthMessage)]
         [MaxLength(TitleMaxLength, ErrorMessage = TitleMaxLengthMessage)]

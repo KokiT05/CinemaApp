@@ -51,5 +51,31 @@ namespace AspNetCoreArchTemplate.Web.Controllers
 
 			return this.View(movieDetails);
 		}
+
+		[HttpGet]
+		public async Task<IActionResult> Edit(string id)
+		{
+			MovieFormViewModel? movieForm = await this.movieService.GetForEditByIdAsync(id);
+
+			if (movieForm == null)
+			{
+				return this.NotFound();
+			}
+
+			return this.View(movieForm);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> Edit(string id, MovieFormViewModel movieFormViewModel)
+		{
+			if (!ModelState.IsValid)
+			{
+				return this.View(movieFormViewModel);
+			}
+
+			await this.movieService.EditAsync(id, movieFormViewModel);
+
+			return this.RedirectToAction(nameof(Details), new { id });
+		}
 	}
 }
