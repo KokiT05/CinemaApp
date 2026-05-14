@@ -1,4 +1,5 @@
 ﻿using AspNetCoreArchTemplate.Data;
+using AspNetCoreArchTemplate.Data.Models;
 using AspNetCoreArchTemplate.Services.Core.Interfaces;
 using AspNetCoreArchTemplate.Web.ViewModels.Movie;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +77,26 @@ namespace AspNetCoreArchTemplate.Web.Controllers
 			await this.movieService.EditAsync(id, movieFormViewModel);
 
 			return this.RedirectToAction(nameof(Details), new { id });
+		}
+
+		[HttpGet]
+		public async Task<IActionResult> Delete(string id)
+		{
+			MovieDetailsViewModel? movieDetails = await this.movieService.GetByIdAsync(id);
+
+			if (movieDetails == null)
+			{
+				return this.NotFound();
+			}
+
+			return this.View(movieDetails);
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> DeleteConfirmed(string id)
+		{
+			await this.movieService.SoftDeleteAsync(id);
+			return this.RedirectToAction(nameof(Index));
 		}
 	}
 }

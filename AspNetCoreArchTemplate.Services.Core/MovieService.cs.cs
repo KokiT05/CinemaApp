@@ -126,5 +126,31 @@ namespace AspNetCoreArchTemplate.Services.Core
 
             await this.applicationDbContext.SaveChangesAsync();
         }
+
+        public async Task SoftDeleteAsync(string id)
+        {
+            Movie? movie = await this.applicationDbContext.Movies
+                                    .FirstOrDefaultAsync(m => m.Id.ToString() == id && m.IsDeleted == false);
+
+            if (movie != null)
+            {
+                movie.IsDeleted = true;
+                await this.applicationDbContext.SaveChangesAsync();
+            }
+        }
+
+        public async Task HardDeleteAsync(string id)
+        {
+            Movie? movie = await this.applicationDbContext.Movies
+                                    .FirstOrDefaultAsync(m => m.Id.ToString() == id);
+
+            if (movie != null)
+            {
+                this.applicationDbContext.Remove(movie);
+                await this.applicationDbContext.SaveChangesAsync();
+            }
+
+
+        }
     }
 }

@@ -19,5 +19,9 @@ namespace AspNetCoreArchTemplate.Services.Core.Interfaces
         Task<MovieFormViewModel?> GetForEditByIdAsync(string id);
 
         Task EditAsync(string id, MovieFormViewModel movieFormViewModel);
+
+        Task SoftDeleteAsync(string id);
+
+        Task HardDeleteAsync(string id);
     }
 }
