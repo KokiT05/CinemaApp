@@ -12,13 +12,13 @@ namespace AspNetCoreArchTemplate.Services.Core.Interfaces
     {
         Task<IEnumerable<AllMoviesIndexViewModel>> GetAllMoviesAsync();
 
-        Task AddAsync(MovieFormViewModel movieFormViewModel);
+        Task AddMovieAsync(MovieFormInputModel movieFormInputModel);
 
-        Task<MovieDetailsViewModel?> GetByIdAsync(string id);
+        Task<MovieDetailsViewModel?> GetMovieDetailsByIdAsync(string? id);
 
-        Task<MovieFormViewModel?> GetForEditByIdAsync(string id);
+        Task<MovieFormInputModel?> GetEditableMovieByIdAsync(string? id);
 
-        Task EditAsync(string id, MovieFormViewModel movieFormViewModel);
+        Task<bool> EditMovieAsync(MovieFormInputModel movieFormInputModel);
 
         Task SoftDeleteAsync(string id);
 

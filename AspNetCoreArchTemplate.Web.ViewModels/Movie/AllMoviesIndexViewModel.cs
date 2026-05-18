@@ -19,8 +19,6 @@ namespace AspNetCoreArchTemplate.Web.ViewModels.Movie
 
 		public string Director { get; set; } = null!;
 
-		public string Duration	{ get; set; } = null!;
-
 		public string? ImageUrl { get; set; }
 	}
 }

@@ -9,10 +9,14 @@ using AspNetCoreArchTemplate.Data.Common;
 namespace AspNetCoreArchTemplate.Web.ViewModels.Movie
 {
     using static AspNetCoreArchTemplate.Data.Common.EntityConstants.Movie;
+    using static AspNetCoreArchTemplate.Web.ViewModels.ValidationMessages.Movie;
+    using static AspNetCoreArchTemplate.GCommon.ApplicationConstants;
 
-    public class MovieFormViewModel
+    public class MovieFormInputModel
     {
-        public string Id { get; set; } = null!;
+        // Id does not have validation, since the model is shared between Add and Edit
+        // Id will be validated in the corresponding Service method
+        public string Id { get; set; } = string.Empty;
 
         [Required(ErrorMessage = TitleRequiredMessage)]
         [MinLength(TitleMinLength, ErrorMessage = TitleMinLengthMessage)]
@@ -42,6 +46,6 @@ namespace AspNetCoreArchTemplate.Web.ViewModels.Movie
         public string Description { get; set; } = null!;
 
         [MaxLength(ImageUrlMaxValue, ErrorMessage = ImageUrlMaxLengthMessage)]
-        public string? ImageUrl { get; set; }
+        public string? ImageUrl { get; set; } = $"~/images/{NoImageUrl}";
     }
 }
