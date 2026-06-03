@@ -1,10 +1,18 @@
-﻿using CinemaApp.Web.ViewModels.Watchlist;
+﻿using CinemaApp.Services.Core.Interfaces;
+using CinemaApp.Web.ViewModels.Watchlist;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Web.Controllers
 {
     public class WatchlistController : Controller
     {
+        private readonly IWatchlistService watchlistService;
+
+        public WatchlistController(IWatchlistService watchlistService)
+        {
+            this.watchlistService = watchlistService;
+        }
+
         [HttpGet]
         public IActionResult Index()
         {
