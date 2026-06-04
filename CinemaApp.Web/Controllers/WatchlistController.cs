@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CinemaApp.Web.Controllers
 {
-    public class WatchlistController : Controller
+    public class WatchlistController : BaseController
     {
         private readonly IWatchlistService watchlistService;
 
@@ -14,20 +14,84 @@ namespace CinemaApp.Web.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            List<WatchlistViewModel> watchlistViewModel = new List<WatchlistViewModel>();
-            return View(watchlistViewModel);
+            if (!this.IsUserAuthenticated())
+            {
+                return this.RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                string userId = this.GetUserId();
+
+                IEnumerable<WatchlistViewModel> watchlistViewModel = await this.watchlistService.GetUserWatchlistAsync(userId);
+                return View(watchlistViewModel);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return this.RedirectToAction("Index", "Home");
+            }
         }
 
-        public IActionResult Add()
+        [HttpPost]
+        public async Task<IActionResult> Add(string movieId)
         {
-            return this.RedirectToAction(nameof(Index));
+            if (!this.IsUserAuthenticated())
+            {
+                return this.RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                string userId = this.GetUserId();
+
+                bool isInWatchlist = await this.watchlistService.IsMovieInWatchlistAsync(userId, movieId);
+
+                if (!isInWatchlist)
+                {
+                    await this.watchlistService.AddToWatchlistAsync(userId, movieId);
+                }
+
+                return this.RedirectToAction("Index", "Movie");
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return this.RedirectToAction("Index", "Movie");
+            }
         }
 
-        public IActionResult Remove()
+        [HttpPost]
+        public async Task<IActionResult> Remove(string movieId)
         {
-            return this.RedirectToAction(nameof(Index));
+            if (!this.IsUserAuthenticated())
+            {
+                return this.RedirectToAction("Index", "Home");
+            }
+
+            try
+            {
+                string userId = this.GetUserId();
+
+                bool isInWatchlist = await this.watchlistService.IsMovieInWatchlistAsync(userId, movieId);
+
+                if (isInWatchlist)
+                {
+                    await this.watchlistService.RemoveFromWatchlistAsync(userId, movieId);
+                }
+
+                return this.RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+
+                return this.RedirectToAction("Index", "Movie");
+            }
         }
     }
 }
