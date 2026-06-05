@@ -12,18 +12,36 @@ namespace CinemaApp.Web.Controllers
 	public class MovieController : BaseController
     {
 		private readonly IMovieService movieService;
+		private readonly IWatchlistService watchlistService;
 
-		public MovieController(IMovieService movieService)
+		public MovieController(IMovieService movieService, IWatchlistService watchlistService)
 		{
 			this.movieService = movieService;
+			this.watchlistService = watchlistService;
 		}
 
 		[AllowAnonymous]
 		public async Task<IActionResult> Index()
 		{
-			IEnumerable<AllMoviesIndexViewModel> movies = await this.movieService.GetAllMoviesAsync();
+			try
+			{
+                IEnumerable<AllMoviesIndexViewModel> movies = await this.movieService.GetAllMoviesAsync();
 
-			return View(movies);
+				string userId = this.GetUserId();
+
+                foreach (AllMoviesIndexViewModel movie in movies)
+                {
+					movie.IsAddedToWatchlist = await this.watchlistService.IsMovieInWatchlistAsync(userId, movie.Id);
+				}
+
+                return this.View(movies);
+            }
+			catch (Exception e)
+			{
+                Console.WriteLine(e.Message);
+
+				return this.RedirectToAction("Index", "Home");
+			}
 		}
 
 		[HttpGet]

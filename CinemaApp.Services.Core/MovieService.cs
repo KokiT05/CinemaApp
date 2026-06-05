@@ -34,7 +34,7 @@ namespace CinemaApp.Services.Core
                                                                     Genre = m.Genre,
                                                                     ReleaseDate = m.ReleaseDate.ToString(AppDateFormat),
                                                                     Director = m.Director,
-                                                                    ImageUrl = m.ImageUrl
+                                                                    ImageUrl = m.ImageUrl,
                                                                 }).ToListAsync();
 
             foreach (AllMoviesIndexViewModel movie in allMovies)

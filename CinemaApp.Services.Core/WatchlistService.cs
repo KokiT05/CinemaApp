@@ -43,33 +43,51 @@ namespace CinemaApp.Services.Core
 
         public async Task<bool> IsMovieInWatchlistAsync(string userId, string movieId)
         {
+            if (!Guid.TryParse(movieId, out Guid validMovieId))
+            {
+                throw new ArgumentException("Invalid movie Id", movieId);
+            }
+
             bool isMovieInWatchlist = await this.cinemaAppDbContext.UserMovies
-                                            .AnyAsync(um => um.UserId == userId && um.MovieId.ToString() == movieId);
+                                            .AnyAsync(um => um.UserId == userId && um.MovieId == validMovieId);
             
             return isMovieInWatchlist;
         }
 
         public async Task AddToWatchlistAsync(string userId, string movieId)
         {
-            UserMovie userMovie = new UserMovie()
-            {
-                UserId = userId,
-                MovieId = Guid.Parse(movieId)
-            };
+            bool isValidMovieId = Guid.TryParse(movieId, out Guid validMovieId);
 
-            await this.cinemaAppDbContext.UserMovies.AddAsync(userMovie);
-            await this.cinemaAppDbContext.SaveChangesAsync();
+            bool isAlreadyExist = await this.cinemaAppDbContext.UserMovies
+                                            .AnyAsync(um => um.UserId == userId && um.MovieId == validMovieId);
+
+            Movie? movie = await this.cinemaAppDbContext.Movies.FirstOrDefaultAsync(m => m.Id == validMovieId);
+
+            if (isValidMovieId && (!isAlreadyExist) && (movie != null))
+            {
+                UserMovie userMovie = new UserMovie()
+                {
+                    UserId = userId,
+                    MovieId = Guid.Parse(movieId)
+                };
+
+                await this.cinemaAppDbContext.UserMovies.AddAsync(userMovie);
+                await this.cinemaAppDbContext.SaveChangesAsync();
+            }
         }
 
         public async Task RemoveFromWatchlistAsync(string userId, string movieId)
         {
-            UserMovie? userMovie = await this.cinemaAppDbContext.UserMovies.FirstOrDefaultAsync
-                                            (um => um.UserId == userId && um.MovieId.ToString() == movieId);
-
-            if (userMovie != null)
+            if (Guid.TryParse(movieId, out Guid validMovieId))
             {
-                this.cinemaAppDbContext.Remove(userMovie);
-                await this.cinemaAppDbContext.SaveChangesAsync();
+                UserMovie? userMovie = await this.cinemaAppDbContext.UserMovies.FirstOrDefaultAsync
+                                (um => um.UserId == userId && um.MovieId == validMovieId);
+
+                if (userMovie != null)
+                {
+                    this.cinemaAppDbContext.Remove(userMovie);
+                    await this.cinemaAppDbContext.SaveChangesAsync();
+                }
             }
         }
     }
